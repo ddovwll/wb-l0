@@ -4,6 +4,7 @@ import (
 	"context"
 	"demoService/src/application/contracts"
 	"demoService/src/application/services"
+	"demoService/src/domain/models"
 	"demoService/src/infrastructure/cache"
 	"demoService/src/infrastructure/database"
 	"demoService/src/infrastructure/database/entities"
@@ -46,14 +47,14 @@ func loadEnv() {
 }
 
 func initDatabase() *gorm.DB {
-	db := database.DatabaseConnection()
+	db := database.ConnectDatabase()
 	if err := db.AutoMigrate(&entities.Order{}, &entities.Delivery{}, &entities.Payment{}, &entities.Item{}); err != nil {
 		log.Fatal(err)
 	}
 	return db
 }
 
-func initCache() contracts.Cache {
+func initCache() contracts.Cache[string, *models.Order] {
 	cacheCapacity, err := strconv.Atoi(os.Getenv("CACHE_CAPACITY"))
 	if err != nil {
 		log.Fatal(err)
@@ -62,7 +63,7 @@ func initCache() contracts.Cache {
 		log.Fatal("CACHE_CAPACITY must be greater than zero")
 	}
 
-	lruCache, err := cache.NewLRUCache(cacheCapacity)
+	lruCache, err := cache.NewLRUCache[string, *models.Order](cacheCapacity)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -78,7 +79,7 @@ func initCache() contracts.Cache {
 	return lruCache
 }
 
-func initServices(db *gorm.DB, cache contracts.Cache) *services.OrderService {
+func initServices(db *gorm.DB, cache contracts.Cache[string, *models.Order]) *services.OrderService {
 	repo := repositories.NewOrderRepository(*db)
 	orderService := services.NewOrderService(repo, cache)
 

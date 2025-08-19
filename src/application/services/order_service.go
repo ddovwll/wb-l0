@@ -9,12 +9,12 @@ import (
 
 type OrderService struct {
 	orderRepository repositories.OrderRepository
-	cache           contracts.Cache
+	cache           contracts.Cache[string, *models.Order]
 }
 
 func NewOrderService(
 	orderRepository repositories.OrderRepository,
-	cache contracts.Cache) *OrderService {
+	cache contracts.Cache[string, *models.Order]) *OrderService {
 	return &OrderService{
 		orderRepository: orderRepository,
 		cache:           cache,
@@ -22,9 +22,8 @@ func NewOrderService(
 }
 
 func (service *OrderService) GetOrderById(context context.Context, orderId string) (*models.Order, error) {
-	cached := service.cache.Get(orderId)
-	if cached != nil {
-		return cached.(*models.Order), nil
+	if cached, ok := service.cache.Get(orderId); ok {
+		return cached, nil
 	}
 
 	fromDb, err := service.orderRepository.GetById(context, orderId)

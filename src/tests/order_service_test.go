@@ -11,7 +11,7 @@ import (
 
 func TestGetOrderById_FromCache(t *testing.T) {
 	repository := mocks.NewMockOrderRepository()
-	lruCache, _ := cache.NewLRUCache(100)
+	lruCache, _ := cache.NewLRUCache[string, *models.Order](100)
 	ctx := context.Background()
 
 	order := models.Order{OrderUID: "cached-order"}
@@ -30,7 +30,7 @@ func TestGetOrderById_FromCache(t *testing.T) {
 
 func TestGetOrderById_FromRepository(t *testing.T) {
 	repository := mocks.NewMockOrderRepository()
-	lruCache, _ := cache.NewLRUCache(100)
+	lruCache, _ := cache.NewLRUCache[string, *models.Order](100)
 	ctx := context.Background()
 
 	order := models.Order{OrderUID: "db-order"}
@@ -46,14 +46,14 @@ func TestGetOrderById_FromRepository(t *testing.T) {
 		t.Errorf("expected order UID 'db-order', got %s", got.OrderUID)
 	}
 
-	if lruCache.Get("db-order") == nil {
+	if _, ok := lruCache.Get("db-order"); !ok {
 		t.Errorf("expected order to be cached")
 	}
 }
 
 func TestCreate_Order(t *testing.T) {
 	repository := mocks.NewMockOrderRepository()
-	lruCache, _ := cache.NewLRUCache(100)
+	lruCache, _ := cache.NewLRUCache[string, *models.Order](100)
 	service := services.NewOrderService(repository, lruCache)
 	ctx := context.Background()
 
@@ -74,7 +74,7 @@ func TestCreate_Order(t *testing.T) {
 
 func TestPreloadOrdersInCache(t *testing.T) {
 	repository := mocks.NewMockOrderRepository()
-	lruCache, _ := cache.NewLRUCache(100)
+	lruCache, _ := cache.NewLRUCache[string, *models.Order](100)
 	ctx := context.Background()
 
 	_ = repository.Create(ctx, models.Order{OrderUID: "1"})
@@ -87,7 +87,11 @@ func TestPreloadOrdersInCache(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	if lruCache.Get("1") == nil || lruCache.Get("2") == nil {
-		t.Errorf("expected orders to be cached")
+	if _, ok := lruCache.Get("1"); !ok {
+		t.Errorf("expected order 1 to be cached")
+	}
+
+	if _, ok := lruCache.Get("2"); !ok {
+		t.Errorf("expected order 2 to be cached")
 	}
 }

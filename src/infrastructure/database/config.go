@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func DatabaseConnection() *gorm.DB {
+func ConnectDatabase() *gorm.DB {
 	sqlInfo := fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		os.Getenv("POSTGRES_HOST"),

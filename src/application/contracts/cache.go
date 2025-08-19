@@ -1,6 +1,6 @@
 package contracts
 
-type Cache interface {
-	Get(key string) any
-	Set(key string, value any)
+type Cache[Key comparable, Value any] interface {
+	Get(key Key) (value Value, ok bool)
+	Set(key Key, value Value)
 }

@@ -15,7 +15,7 @@ import (
 
 func TestGetOrderById_BadRequest(t *testing.T) {
 	repository := mocks.NewMockOrderRepository()
-	lruCache, _ := cache.NewLRUCache(100)
+	lruCache, _ := cache.NewLRUCache[string, *models.Order](100)
 	service := services.NewOrderService(repository, lruCache)
 	controller := controllers.NewOrderController(*service)
 
@@ -31,7 +31,7 @@ func TestGetOrderById_BadRequest(t *testing.T) {
 
 func TestGetOrderById_Success(t *testing.T) {
 	repository := mocks.NewMockOrderRepository()
-	lruCache, _ := cache.NewLRUCache(100)
+	lruCache, _ := cache.NewLRUCache[string, *models.Order](100)
 	service := services.NewOrderService(repository, lruCache)
 	controller := controllers.NewOrderController(*service)
 
@@ -60,7 +60,7 @@ func TestGetOrderById_Success(t *testing.T) {
 
 func TestGetOrderById_NotFound(t *testing.T) {
 	repository := mocks.NewMockOrderRepository()
-	lruCache, _ := cache.NewLRUCache(100)
+	lruCache, _ := cache.NewLRUCache[string, *models.Order](100)
 	service := services.NewOrderService(repository, lruCache)
 	controller := controllers.NewOrderController(*service)
 

@@ -37,7 +37,7 @@ func (controller *OrderController) UseHandlers() {
 // @Failure      400  {string}  string  "order_uid not provided"
 // @Failure      404  {string}  string  "Order not found"
 // @Failure      500  {string}  string  "Internal server error"
-// @Router       /orders/{order_uid} [get]
+// @Router       /order/{order_uid} [get]
 func (controller *OrderController) GetOrderById(response http.ResponseWriter, request *http.Request) {
 	parts := strings.Split(request.URL.Path, "/")
 	if len(parts) < 3 || parts[2] == "" {

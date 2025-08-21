@@ -147,7 +147,7 @@ info:
   title: Demo Service API
   version: "1.0"
 paths:
-  /orders/{order_uid}:
+  /order/{order_uid}:
     get:
       description: Возвращает заказ по его уникальному идентификатору
       parameters:

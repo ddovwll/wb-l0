@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/orders/{order_uid}": {
+        "/order/{order_uid}": {
             "get": {
                 "description": "Возвращает заказ по его уникальному идентификатору",
                 "produces": [
